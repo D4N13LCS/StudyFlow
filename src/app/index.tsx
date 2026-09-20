@@ -69,14 +69,20 @@ export default function DashboardScreen() {
         <View style={styles.section}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>Próximos Eventos</ThemedText>
           <View style={styles.sectionContent}>
-            {upcomingEvents.map(event => (
-              <ThemedView key={event.id} type="backgroundElement" style={styles.eventItem}>
-                <ThemedText type="default">{event.title}</ThemedText>
-                <ThemedText type="small" themeColor="textSecondary">
-                  {new Date(event.date).toLocaleDateString('pt-BR')}
-                </ThemedText>
-              </ThemedView>
-            ))}
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map(event => (
+                <ThemedView key={event.id} type="backgroundElement" style={styles.eventItem}>
+                  <ThemedText type="default">{event.title}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {new Date(event.date).toLocaleDateString('pt-BR')}
+                  </ThemedText>
+                </ThemedView>
+              ))
+            ) : (
+              <ThemedText type="small" themeColor="textSecondary">
+                Não há eventos próximos.
+              </ThemedText>
+            )}
           </View>
         </View>
 
@@ -99,6 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.five }),
     paddingHorizontal: Platform.select({ web: Spacing.six, default: Spacing.four }),
     paddingBottom: BottomTabInset + Spacing.four,
     maxWidth: MaxContentWidth,
@@ -106,7 +113,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   header: {
-    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.four }),
     paddingBottom: Spacing.four,
   },
   statsContainer: {

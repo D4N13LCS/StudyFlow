@@ -47,8 +47,8 @@ export const mockTasks: Task[] = [
     subjectId: '2',
     status: 'in_progress',
     priority: 'high',
-    dueDate: '2024-10-25',
-    createdAt: '2024-10-15',
+    dueDate: '2026-10-25',
+    createdAt: '2026-10-15',
   },
   {
     id: '2',
@@ -57,8 +57,8 @@ export const mockTasks: Task[] = [
     subjectId: '2',
     status: 'pending',
     priority: 'high',
-    dueDate: '2024-10-30',
-    createdAt: '2024-10-10',
+    dueDate: '2026-10-30',
+    createdAt: '2026-10-10',
   },
   {
     id: '3',
@@ -67,8 +67,8 @@ export const mockTasks: Task[] = [
     subjectId: '3',
     status: 'pending',
     priority: 'medium',
-    dueDate: '2024-11-05',
-    createdAt: '2024-10-12',
+    dueDate: '2026-11-05',
+    createdAt: '2026-10-12',
   },
   {
     id: '4',
@@ -77,8 +77,8 @@ export const mockTasks: Task[] = [
     subjectId: '1',
     status: 'pending',
     priority: 'high',
-    dueDate: '2024-11-10',
-    createdAt: '2024-10-01',
+    dueDate: '2026-11-10',
+    createdAt: '2026-10-01',
   },
   {
     id: '5',
@@ -87,8 +87,8 @@ export const mockTasks: Task[] = [
     subjectId: '4',
     status: 'completed',
     priority: 'low',
-    dueDate: '2024-10-18',
-    createdAt: '2024-10-14',
+    dueDate: '2026-10-18',
+    createdAt: '2026-10-14',
   },
   {
     id: '6',
@@ -97,8 +97,8 @@ export const mockTasks: Task[] = [
     subjectId: '1',
     status: 'pending',
     priority: 'medium',
-    dueDate: '2024-11-15',
-    createdAt: '2024-10-16',
+    dueDate: '2026-11-15',
+    createdAt: '2026-10-16',
   },
 ];
 
@@ -106,7 +106,7 @@ export const mockCalendarEvents: CalendarEvent[] = [
   {
     id: '1',
     title: 'Prova de Banco de Dados',
-    date: '2024-11-05',
+    date: '2026-11-05',
     type: 'exam',
     subjectId: '3',
     description: 'Avaliação sobre normalização e SQL avançado',
@@ -114,7 +114,7 @@ export const mockCalendarEvents: CalendarEvent[] = [
   {
     id: '2',
     title: 'Entrega do Projeto de Aplicativos Híbridos',
-    date: '2024-10-30',
+    date: '2026-10-30',
     type: 'assignment',
     subjectId: '2',
     description: 'Submissão do projeto final',
@@ -122,7 +122,7 @@ export const mockCalendarEvents: CalendarEvent[] = [
   {
     id: '3',
     title: 'Aula de Engenharia de Software',
-    date: '2024-10-21',
+    date: '2026-10-21',
     type: 'class',
     subjectId: '1',
     description: 'Tópico: Padrões de Projeto',
@@ -130,14 +130,14 @@ export const mockCalendarEvents: CalendarEvent[] = [
   {
     id: '4',
     title: 'Feriado',
-    date: '2024-11-02',
+    date: '2026-11-02',
     type: 'holiday',
     description: 'Dia de Finados',
   },
   {
     id: '5',
     title: 'Prova de Arquitetura de Software',
-    date: '2024-11-20',
+    date: '2026-11-20',
     type: 'exam',
     subjectId: '4',
     description: 'Avaliação sobre arquiteturas monolíticas e microserviços',
@@ -145,7 +145,7 @@ export const mockCalendarEvents: CalendarEvent[] = [
   {
     id: '6',
     title: 'Apresentação de Projeto',
-    date: '2024-11-10',
+    date: '2026-11-10',
     type: 'assignment',
     subjectId: '1',
     description: 'Apresentação do projeto semestral',

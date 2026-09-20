@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.five }),
     paddingHorizontal: Platform.select({ web: Spacing.six, default: Spacing.four }),
     paddingBottom: BottomTabInset + Spacing.four,
     maxWidth: MaxContentWidth,
@@ -61,7 +62,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   header: {
-    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.four }),
     paddingBottom: Spacing.four,
   },
   subjectsList: {
