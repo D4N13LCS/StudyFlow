@@ -6,6 +6,13 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { mockTasks, mockSubjects } from '@/data/mockData';
 import { TaskStatus, TaskPriority } from '@/types';
 
+// Utility function to format date without timezone issues
+const formatDateWithoutTimezone = (dateStr: string, locale: string, options?: Intl.DateTimeFormatOptions): string => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.toLocaleDateString(locale, options);
+};
+
 export default function TasksScreen() {
   const router = useRouter();
 
@@ -98,7 +105,7 @@ export default function TasksScreen() {
                     </ThemedText>
                   </View>
                   <ThemedText type="small" themeColor="textSecondary">
-                    Data: {new Date(task.dueDate).toLocaleDateString('pt-BR')}
+                    Data: {formatDateWithoutTimezone(task.dueDate, 'pt-BR')}
                   </ThemedText>
                 </View>
               </ThemedView>

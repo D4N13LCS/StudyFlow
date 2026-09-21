@@ -112,14 +112,6 @@ export const mockCalendarEvents: CalendarEvent[] = [
     description: 'Avaliação sobre normalização e SQL avançado',
   },
   {
-    id: '2',
-    title: 'Entrega do Projeto de Aplicativos Híbridos',
-    date: '2026-10-30',
-    type: 'assignment',
-    subjectId: '2',
-    description: 'Submissão do projeto final',
-  },
-  {
     id: '3',
     title: 'Aula de Engenharia de Software',
     date: '2026-10-21',
