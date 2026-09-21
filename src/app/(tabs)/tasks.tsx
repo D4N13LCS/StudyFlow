@@ -1,4 +1,4 @@
-import { StyleSheet, View, Platform, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, View, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -72,9 +72,10 @@ export default function TasksScreen() {
 
         <View style={styles.tasksList}>
           {mockTasks.map(task => (
-            <Pressable
+            <TouchableOpacity
               key={task.id}
-              onPress={() => router.push(`/task/${task.id}` as any)}>
+              onPress={() => router.push(`/task/${task.id}` as any)}
+              activeOpacity={0.7}>
               <ThemedView type="backgroundElement" style={styles.taskCard}>
                 <View style={styles.taskHeader}>
                   <View style={styles.taskTitleContainer}>
@@ -101,7 +102,7 @@ export default function TasksScreen() {
                   </ThemedText>
                 </View>
               </ThemedView>
-            </Pressable>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
