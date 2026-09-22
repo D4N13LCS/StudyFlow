@@ -3,10 +3,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import ScreenContainer from '@/components/screen-container';
-import ScreenHeader from '@/components/screen-header';
 import Badge from '@/components/badge';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { formatDateWithoutTimezone } from '@/utils/date';
-import { Spacing } from '@/constants/theme';
 import { mockCalendarEvents, mockSubjects, mockTasks } from '@/data/mockData';
 import { TaskStatus, TaskPriority } from '@/types';
 
@@ -79,17 +78,17 @@ export default function CalendarScreen() {
   const getEventTypeColor = (type: string) => {
     switch (type) {
       case 'exam':
-        return '#EF4444';
+        return Colors.light.error;
       case 'assignment':
-        return '#F59E0B';
+        return Colors.light.warning;
       case 'class':
-        return '#3B82F6';
+        return Colors.light.primary;
       case 'holiday':
-        return '#10B981';
+        return Colors.light.success;
       case 'task':
-        return '#8B5CF6';
+        return Colors.light.secondary;
       default:
-        return '#6B7280';
+        return Colors.light.textSecondary;
     }
   };
 
@@ -197,27 +196,27 @@ export default function CalendarScreen() {
     }
 
     return (
-      <ThemedView type="backgroundElement" style={styles.calendarCard}>
+      <ThemedView type="surface" style={styles.calendarCard}>
         <View style={styles.calendarHeader}>
           <TouchableOpacity
             style={styles.navButton}
             onPress={() => navigateMonth('prev')}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <ThemedText type="default">‹</ThemedText>
+            <ThemedText style={styles.navIcon}>‹</ThemedText>
           </TouchableOpacity>
-          <ThemedText type="subtitle" style={styles.monthTitle}>
+          <ThemedText style={styles.monthTitle}>
             {monthName.charAt(0).toUpperCase() + monthName.slice(1)}
           </ThemedText>
           <TouchableOpacity
             style={styles.navButton}
             onPress={() => navigateMonth('next')}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <ThemedText type="default">›</ThemedText>
+            <ThemedText style={styles.navIcon}>›</ThemedText>
           </TouchableOpacity>
         </View>
         <View style={styles.weekDays}>
           {weekDays.map(day => (
-            <ThemedText key={day} type="small" themeColor="textSecondary" style={styles.weekDay}>
+            <ThemedText key={day} themeColor="textSecondary" style={styles.weekDay}>
               {day}
             </ThemedText>
           ))}
@@ -230,19 +229,22 @@ export default function CalendarScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScreenContainer>
-        <ScreenHeader
-          title="Calendário"
-          subtitle={`${mockCalendarEvents.length} eventos agendados`}
-        />
+        {/* Header */}
+        <View style={styles.header}>
+          <ThemedText style={styles.title}>Calendário</ThemedText>
+          <ThemedText type="bodySecondary" themeColor="textSecondary">
+            {mockCalendarEvents.length} eventos agendados
+          </ThemedText>
+        </View>
 
         {renderCalendar()}
 
         <View style={styles.eventsSection}>
           <View style={styles.selectedDateHeader}>
-            <ThemedText type="default" style={styles.selectedDateDay}>
+            <ThemedText style={styles.selectedDateDay}>
               {formatDateWithoutTimezone(selectedDate, 'pt-BR', { day: 'numeric' })}
             </ThemedText>
-            <ThemedText type="default" style={styles.selectedDateText}>
+            <ThemedText style={styles.selectedDateText}>
               {formatDateWithoutTimezone(selectedDate, 'pt-BR', {
                 weekday: 'long',
                 month: 'long',
@@ -253,16 +255,16 @@ export default function CalendarScreen() {
           {selectedDateItems.length > 0 ? (
             <View style={styles.eventsList}>
               {selectedDateItems.map((item: CalendarItem) => (
-                <View key={item.id} style={styles.eventItem}>
+                <ThemedView key={item.id} type="surface" style={styles.eventItem}>
                   <View style={styles.eventTime}>
-                    <ThemedText type="small" themeColor="textSecondary">
+                    <ThemedText type="caption" themeColor="textSecondary">
                       {formatDateWithoutTimezone(item.date, 'pt-BR')}
                     </ThemedText>
                   </View>
                   <View style={styles.eventContent}>
-                    <ThemedText type="default">{item.title}</ThemedText>
+                    <ThemedText type="cardTitle">{item.title}</ThemedText>
                     {item.subjectId && (
-                      <ThemedText type="small" themeColor="textSecondary">
+                      <ThemedText type="caption" themeColor="textSecondary">
                         {getSubjectName(item.subjectId)}
                       </ThemedText>
                     )}
@@ -271,22 +273,17 @@ export default function CalendarScreen() {
                         {getEventTypeLabel(item.type)}
                       </Badge>
                       {item.type === 'task' && item.taskStatus && (
-                        <ThemedText type="small" themeColor="textSecondary">
+                        <ThemedText type="caption" themeColor="textSecondary">
                           {getTaskStatusLabel(item.taskStatus)}
-                        </ThemedText>
-                      )}
-                      {item.description && (
-                        <ThemedText type="small" themeColor="textSecondary">
-                          {item.description}
                         </ThemedText>
                       )}
                     </View>
                   </View>
-                </View>
+                </ThemedView>
               ))}
             </View>
           ) : (
-            <ThemedText type="small" themeColor="textSecondary">
+            <ThemedText type="caption" themeColor="textSecondary">
               Nenhum evento para este dia
             </ThemedText>
           )}
@@ -300,32 +297,50 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  header: {
+    paddingTop: Platform.select({ web: 0, default: Spacing.two }),
+    paddingBottom: Spacing.five,
+  },
+  title: {
+    ...Typography.pageTitle,
+    marginBottom: Spacing.one,
+  },
   calendarCard: {
-    padding: Platform.select({ web: Spacing.three, default: Spacing.two }),
-    borderRadius: Spacing.three,
-    marginBottom: Spacing.four,
+    padding: Platform.select({ web: Spacing.five, default: Spacing.four }),
+    borderRadius: Radius.lg,
+    marginBottom: Spacing.five,
   },
   calendarHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.two,
+    marginBottom: Spacing.three,
   },
   navButton: {
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
+    paddingVertical: Spacing.three,
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navIcon: {
+    fontSize: 24,
+    fontWeight: '300',
   },
   monthTitle: {
+    ...Typography.sectionTitle,
     textTransform: 'capitalize',
   },
   weekDays: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: Spacing.one,
+    marginBottom: Spacing.two,
   },
   weekDay: {
     flex: 1,
     textAlign: 'center',
+    ...Typography.label,
   },
   daysGrid: {
     flexDirection: 'row',
@@ -336,15 +351,15 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: Spacing.two,
+    borderRadius: Radius.md,
     paddingVertical: Spacing.one,
   },
   dayCellSelected: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.light.primary,
   },
   dayTextSelected: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   eventDot: {
     width: 4,
@@ -353,19 +368,21 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   eventsSection: {
-    gap: Spacing.three,
+    gap: Spacing.four,
   },
   selectedDateHeader: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: Spacing.two,
-    marginBottom: Spacing.three,
+    gap: Spacing.three,
+    marginBottom: Spacing.four,
   },
   selectedDateDay: {
+    ...Typography.display,
     fontSize: 32,
-    fontWeight: 'bold',
+    lineHeight: 40,
   },
   selectedDateText: {
+    ...Typography.body,
     textTransform: 'capitalize',
   },
   eventsList: {
@@ -374,7 +391,9 @@ const styles = StyleSheet.create({
   eventItem: {
     flexDirection: 'row',
     gap: Spacing.three,
-    paddingVertical: Spacing.two,
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Platform.select({ web: Spacing.four, default: Spacing.three }),
+    borderRadius: Radius.lg,
   },
   eventTime: {
     width: 80,
