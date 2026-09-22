@@ -9,7 +9,7 @@ import { formatDateWithoutTimezone } from '@/utils/date';
 import { mockCalendarEvents, mockSubjects, mockTasks } from '@/data/mockData';
 import { TaskStatus, TaskPriority } from '@/types';
 
-// Combined calendar item type
+
 interface CalendarItem {
   id: string;
   title: string;
@@ -21,11 +21,11 @@ interface CalendarItem {
   taskPriority?: TaskPriority;
 }
 
-// Combine tasks and calendar events
+
 const getCombinedCalendarItems = (): CalendarItem[] => {
   const items: CalendarItem[] = [];
 
-  // Add calendar events
+
   mockCalendarEvents.forEach(event => {
     items.push({
       id: event.id,
@@ -37,7 +37,7 @@ const getCombinedCalendarItems = (): CalendarItem[] => {
     });
   });
 
-  // Add tasks as calendar items
+
   mockTasks.forEach(task => {
     items.push({
       id: `task-${task.id}`,
@@ -58,7 +58,6 @@ export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // Initialize selectedDate to first event date or first day of month
   useEffect(() => {
     const monthStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
     const combinedItems = getCombinedCalendarItems();
@@ -120,18 +119,18 @@ export default function CalendarScreen() {
     }
   };
 
-  // Get items for selected date - single source of truth
+
   const selectedDateItems = useMemo(() => {
     return getCombinedCalendarItems().filter((item: CalendarItem) => item.date === selectedDate);
   }, [selectedDate]);
 
-  // Get dates in current month that have items
+
   const datesWithItemsInMonth = useMemo(() => {
     const monthStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
     return new Set(getCombinedCalendarItems().filter((item: CalendarItem) => item.date.startsWith(monthStr)).map((item: CalendarItem) => item.date));
   }, [currentMonth]);
 
-  // Calendar helpers
+
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
@@ -149,7 +148,7 @@ export default function CalendarScreen() {
     }
     setCurrentMonth(newDate);
 
-    // Update selectedDate to first event in new month or first day
+
     const monthStr = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}`;
     const eventsInMonth = mockCalendarEvents.filter(e => e.date.startsWith(monthStr));
     if (eventsInMonth.length > 0) {
@@ -166,12 +165,12 @@ export default function CalendarScreen() {
     const weekDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
     const days = [];
-    // Empty cells for days before first day of month
+   
     for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
       days.push(<View key={`empty-${i}`} style={styles.dayCell} />);
     }
 
-    // Days of the month
+  
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const hasEvents = datesWithItemsInMonth.has(dateStr);

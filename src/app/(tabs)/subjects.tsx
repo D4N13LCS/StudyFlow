@@ -9,7 +9,7 @@ export default function SubjectsScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScreenContainer>
-        {/* Header */}
+       
         <View style={styles.header}>
           <ThemedText style={styles.title}>Disciplinas</ThemedText>
           <ThemedText type="bodySecondary" themeColor="textSecondary">
@@ -17,7 +17,7 @@ export default function SubjectsScreen() {
           </ThemedText>
         </View>
 
-        {/* Subjects Grid */}
+   
         <View style={styles.subjectsGrid}>
           {mockSubjects.map(subject => (
             <ThemedView key={subject.id} type="surface" style={styles.subjectCard}>

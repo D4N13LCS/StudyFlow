@@ -14,39 +14,38 @@ export const Colors = {
     primaryLight: '#6366F1',
     secondary: '#7C3AED',
     
-    // Background and surface
+   
     background: '#F8FAFC',
     surface: '#FFFFFF',
     backgroundElement: '#F1F5F9',
     backgroundSelected: '#E2E8F0',
     
-    // Text
+    
     text: '#111827',
     textSecondary: '#64748B',
     
-    // Semantic colors
+
     success: '#10B981',
     warning: '#F59E0B',
     error: '#EF4444',
     info: '#3B82F6',
   },
   dark: {
-    // Primary colors (Blue/Purple theme - adjusted for dark mode)
+  
     primary: '#6366F1',
     primaryLight: '#818CF8',
     secondary: '#8B5CF6',
     
-    // Background and surface
+
     background: '#0F172A',
     surface: '#1E293B',
     backgroundElement: '#334155',
     backgroundSelected: '#475569',
-    
-    // Text
+ 
     text: '#F1F5F9',
     textSecondary: '#94A3B8',
     
-    // Semantic colors (adjusted for dark mode)
+
     success: '#34D399',
     warning: '#FBBF24',
     error: '#F87171',

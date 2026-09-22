@@ -64,7 +64,7 @@ export default function TasksScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScreenContainer>
-        {/* Header */}
+      
         <View style={styles.header}>
           <ThemedText style={styles.title}>Tarefas</ThemedText>
           <ThemedText type="bodySecondary" themeColor="textSecondary">
@@ -72,7 +72,7 @@ export default function TasksScreen() {
           </ThemedText>
         </View>
 
-        {/* Tasks List */}
+       
         <View style={styles.tasksList}>
           {mockTasks.map(task => (
             <TouchableOpacity

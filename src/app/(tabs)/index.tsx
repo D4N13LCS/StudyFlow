@@ -59,7 +59,7 @@ export default function DashboardScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScreenContainer>
-        {/* Header */}
+
         <View style={styles.header}>
           <ThemedText style={styles.greeting}>Olá, {mockUserProfile.name.split(' ')[0]}!</ThemedText>
           <ThemedText type="bodySecondary" themeColor="textSecondary" style={styles.subtitle}>
@@ -67,7 +67,7 @@ export default function DashboardScreen() {
           </ThemedText>
         </View>
 
-        {/* Stats Cards */}
+       
         <View style={styles.statsContainer}>
           <ThemedView type="surface" style={styles.statCard}>
             <ThemedText style={[styles.statValue, { color: Colors.light.primary }]}>{pendingTasks}</ThemedText>
@@ -83,9 +83,9 @@ export default function DashboardScreen() {
           </ThemedView>
         </View>
 
-        {/* Content Grid */}
+
         <View style={styles.contentGrid}>
-          {/* Upcoming Tasks */}
+     
           <View style={styles.contentSection}>
             <ThemedText type="sectionTitle" style={styles.sectionTitle}>Próximas Tarefas</ThemedText>
             <View style={styles.sectionContent}>
@@ -113,7 +113,7 @@ export default function DashboardScreen() {
             </View>
           </View>
 
-          {/* Upcoming Events */}
+  
           <View style={styles.contentSection}>
             <ThemedText type="sectionTitle" style={styles.sectionTitle}>Próximos Eventos</ThemedText>
             <View style={styles.sectionContent}>
@@ -135,7 +135,7 @@ export default function DashboardScreen() {
           </View>
         </View>
 
-        {/* Subjects */}
+        
         <View style={styles.section}>
           <ThemedText type="sectionTitle" style={styles.sectionTitle}>Disciplinas</ThemedText>
           <View style={styles.subjectsGrid}>
