@@ -81,6 +81,49 @@ export const Fonts = Platform.select({
   },
 });
 
+export const Typography = {
+  display: {
+    fontSize: 48,
+    fontWeight: '600' as const,
+    lineHeight: 52,
+  },
+  pageTitle: {
+    fontSize: 32,
+    fontWeight: '600' as const,
+    lineHeight: 44,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600' as const,
+    lineHeight: 28,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    lineHeight: 24,
+  },
+  body: {
+    fontSize: 16,
+    fontWeight: '500' as const,
+    lineHeight: 24,
+  },
+  bodySecondary: {
+    fontSize: 14,
+    fontWeight: '500' as const,
+    lineHeight: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    lineHeight: 20,
+  },
+  caption: {
+    fontSize: 12,
+    fontWeight: '500' as const,
+    lineHeight: 16,
+  },
+} as const;
+
 export const Spacing = {
   half: 2,
   one: 4,

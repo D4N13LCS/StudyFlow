@@ -1,5 +1,5 @@
 import { StyleSheet, View, Platform, ScrollView, ScrollViewProps } from 'react-native';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { ReactNode } from 'react';
 
 interface ScreenContainerProps extends ScrollViewProps {
