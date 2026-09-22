@@ -1,35 +1,59 @@
-import { StyleSheet, View, Platform, ScrollView } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import {
+  StyleSheet,
+  View,
+  Platform,
+  ScrollView,
+  Pressable,
+} from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+
+import {
+  BottomTabInset,
+  MaxContentWidth,
+  Radius,
+  Spacing,
+  Typography,
+} from '@/constants/theme';
+
 import { mockTasks, mockSubjects } from '@/data/mockData';
 import { TaskStatus, TaskPriority } from '@/types';
 
 export default function TaskDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
 
-  // Handle case where id might be an array
   const taskId = Array.isArray(id) ? id[0] : id;
-  const task = mockTasks.find(t => t.id === taskId);
+  const task = mockTasks.find((t) => t.id === taskId);
 
   if (!task) {
     return (
       <ThemedView style={styles.container}>
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}>
+          contentContainerStyle={styles.scrollContent}
+        >
           <View style={styles.header}>
-            <ThemedText type="title">Tarefa não encontrada</ThemedText>
+            <ThemedText type="title">
+              Tarefa não encontrada
+            </ThemedText>
+
+            <ThemedText
+              type="small"
+              themeColor="textSecondary"
+            >
+              A tarefa solicitada não existe.
+            </ThemedText>
           </View>
-          <ThemedText type="default">A tarefa solicitada não existe.</ThemedText>
         </ScrollView>
       </ThemedView>
     );
   }
 
-  const subject = mockSubjects.find(s => s.id === task.subjectId);
+  const subject = mockSubjects.find(
+    (s) => s.id === task.subjectId
+  );
 
   const getStatusColor = (status: TaskStatus) => {
     switch (status) {
@@ -75,63 +99,191 @@ export default function TaskDetailScreen() {
     }
   };
 
+  const formatDate = (date: string) => {
+    const [year, month, day] = date.split('-');
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleEdit = () => {
+    console.log('Editar tarefa:', task.id);
+  };
+
+  const handleDelete = () => {
+    console.log('Excluir tarefa:', task.id);
+  };
+
   return (
     <ThemedView style={styles.container}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.header}>
-          <ThemedText type="title">Detalhes da Tarefa</ThemedText>
+          <ThemedText type="title">
+            Detalhes da Tarefa
+          </ThemedText>
+
+          <ThemedText
+            type="small"
+            themeColor="textSecondary"
+          >
+            Visualização completa da atividade.
+          </ThemedText>
         </View>
 
-        <ThemedView type="backgroundElement" style={styles.card}>
-          <View style={styles.cardHeader}>
-            <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(task.status) }]} />
-            <View style={styles.cardTitleContainer}>
-              <ThemedText type="default">{task.title}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
+        <ThemedView
+          type="backgroundElement"
+          style={styles.card}
+        >
+          {/* Título e disciplina */}
+          <View style={styles.titleSection}>
+            <View
+              style={[
+                styles.statusIndicator,
+                {
+                  backgroundColor: getStatusColor(task.status),
+                },
+              ]}
+            />
+
+            <View style={styles.titleContent}>
+              <ThemedText type="sectionTitle">
+                {task.title}
+              </ThemedText>
+
+              <ThemedText
+                type="small"
+                themeColor="textSecondary"
+                numberOfLines={2}
+              >
                 {subject?.name || 'Disciplina não encontrada'}
               </ThemedText>
             </View>
           </View>
 
-          <View style={styles.section}>
-            <ThemedText type="small" themeColor="textSecondary" style={styles.sectionLabel}>Descrição</ThemedText>
-            <ThemedText type="default">{task.description}</ThemedText>
+          {/* Status e prioridade */}
+          <View style={styles.badgesRow}>
+            <View
+              style={[
+                styles.badge,
+                {
+                  backgroundColor: getStatusColor(task.status),
+                },
+              ]}
+            >
+              <ThemedText
+                type="caption"
+                style={styles.badgeText}
+              >
+                {getStatusLabel(task.status)}
+              </ThemedText>
+            </View>
+
+            <View
+              style={[
+                styles.badge,
+                {
+                  backgroundColor: getPriorityColor(task.priority),
+                },
+              ]}
+            >
+              <ThemedText
+                type="caption"
+                style={styles.badgeText}
+              >
+                Prioridade {getPriorityLabel(task.priority)}
+              </ThemedText>
+            </View>
           </View>
 
+          <View style={styles.divider} />
+
+          {/* Descrição */}
+          <View style={styles.section}>
+            <ThemedText
+              type="label"
+              themeColor="textSecondary"
+              style={styles.sectionLabel}
+            >
+              Descrição
+            </ThemedText>
+
+            <ThemedText type="default">
+              {task.description}
+            </ThemedText>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Datas */}
           <View style={styles.detailsGrid}>
             <View style={styles.detailItem}>
-              <ThemedText type="small" themeColor="textSecondary">Status</ThemedText>
-              <View style={[styles.badge, { backgroundColor: getStatusColor(task.status) }]}>
-                <ThemedText type="small" style={styles.badgeText}>
-                  {getStatusLabel(task.status)}
-                </ThemedText>
-              </View>
-            </View>
+              <ThemedText
+                type="caption"
+                themeColor="textSecondary"
+              >
+                Data de Vencimento
+              </ThemedText>
 
-            <View style={styles.detailItem}>
-              <ThemedText type="small" themeColor="textSecondary">Prioridade</ThemedText>
-              <View style={[styles.badge, { backgroundColor: getPriorityColor(task.priority) }]}>
-                <ThemedText type="small" style={styles.badgeText}>
-                  {getPriorityLabel(task.priority)}
-                </ThemedText>
-              </View>
-            </View>
-
-            <View style={styles.detailItem}>
-              <ThemedText type="small" themeColor="textSecondary">Data de Vencimento</ThemedText>
               <ThemedText type="default">
-                {new Date(task.dueDate).toLocaleDateString('pt-BR')}
+                {formatDate(task.dueDate)}
               </ThemedText>
             </View>
 
             <View style={styles.detailItem}>
-              <ThemedText type="small" themeColor="textSecondary">Data de Criação</ThemedText>
+              <ThemedText
+                type="caption"
+                themeColor="textSecondary"
+              >
+                Data de Criação
+              </ThemedText>
+
               <ThemedText type="default">
-                {new Date(task.createdAt).toLocaleDateString('pt-BR')}
+                {formatDate(task.createdAt)}
               </ThemedText>
             </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Ações */}
+          <View style={styles.actions}>
+            <Pressable
+              onPress={handleEdit}
+              style={({ pressed }) => [
+                styles.actionButton,
+                styles.editButton,
+                {
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              <ThemedText
+                type="label"
+                style={styles.editButtonText}
+              >
+                Editar
+              </ThemedText>
+            </Pressable>
+
+            <Pressable
+              onPress={handleDelete}
+              style={({ pressed }) => [
+                styles.actionButton,
+                styles.deleteButton,
+                {
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              <ThemedText
+                type="label"
+                style={styles.deleteButtonText}
+              >
+                Excluir
+              </ThemedText>
+            </Pressable>
           </View>
         </ThemedView>
       </ScrollView>
@@ -143,57 +295,140 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
   scrollView: {
     flex: 1,
   },
+
   scrollContent: {
-    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.five }),
-    paddingHorizontal: Platform.select({ web: Spacing.six, default: Spacing.four }),
+    paddingTop: Platform.select({
+      web: Spacing.six,
+      default: Spacing.five,
+    }),
+
+    paddingHorizontal: Platform.select({
+      web: Spacing.six,
+      default: Spacing.four,
+    }),
+
     paddingBottom: BottomTabInset + Spacing.four,
+
     maxWidth: MaxContentWidth,
     width: '100%',
     alignSelf: 'center',
   },
+
   header: {
     paddingBottom: Spacing.four,
-  },
-  card: {
-    padding: Platform.select({ web: Spacing.four, default: Spacing.three }),
-    borderRadius: Spacing.three,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.four,
-    gap: Spacing.three,
-  },
-  cardTitleContainer: {
-    flex: 1,
-  },
-  statusIndicator: {
-    width: 4,
-    height: 40,
-    borderRadius: 2,
-  },
-  section: {
-    marginBottom: Spacing.four,
-  },
-  sectionLabel: {
-    marginBottom: Spacing.one,
-  },
-  detailsGrid: {
-    gap: Spacing.three,
-  },
-  detailItem: {
     gap: Spacing.one,
   },
-  badge: {
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-    borderRadius: Spacing.two,
-    alignSelf: 'flex-start',
+
+  card: {
+    width: '100%',
+
+    padding: Platform.select({
+      web: Spacing.five,
+      default: Spacing.four,
+    }),
+
+    borderRadius: Radius.lg,
+    gap: Spacing.four,
   },
+
+  titleSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
+
+  statusIndicator: {
+    width: 5,
+    minHeight: 48,
+    alignSelf: 'stretch',
+    borderRadius: Radius.full,
+  },
+
+  titleContent: {
+    flex: 1,
+    gap: Spacing.one,
+  },
+
+  badgesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+  },
+
+  badge: {
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
+    borderRadius: Radius.full,
+  },
+
   badgeText: {
     color: '#FFFFFF',
+  },
+
+  divider: {
+    width: '100%',
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E5E7EB',
+  },
+
+  section: {
+    gap: Spacing.two,
+  },
+
+  sectionLabel: {
+    textTransform: 'uppercase',
+  },
+
+  detailsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.four,
+  },
+
+  detailItem: {
+    flex: 1,
+    minWidth: 140,
+    gap: Spacing.one,
+  },
+
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+  },
+
+  actionButton: {
+    minHeight: 44,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  editButton: {
+    minWidth: 100,
+    borderColor: '#4F46E5',
+  },
+
+  deleteButton: {
+    minWidth: 100,
+    borderColor: '#EF4444',
+  },
+
+  editButtonText: {
+    color: '#4F46E5',
+    fontWeight: Typography.label.fontWeight,
+  },
+
+  deleteButtonText: {
+    color: '#EF4444',
+    fontWeight: Typography.label.fontWeight,
   },
 });
