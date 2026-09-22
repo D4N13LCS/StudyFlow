@@ -1,17 +1,15 @@
-import { StyleSheet, View, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Platform, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import ScreenContainer from '@/components/screen-container';
+import ScreenHeader from '@/components/screen-header';
+import StatusIndicator from '@/components/status-indicator';
+import Badge from '@/components/badge';
+import { formatDateWithoutTimezone } from '@/utils/date';
+import { Spacing } from '@/constants/theme';
 import { mockTasks, mockSubjects } from '@/data/mockData';
 import { TaskStatus, TaskPriority } from '@/types';
-
-// Utility function to format date without timezone issues
-const formatDateWithoutTimezone = (dateStr: string, locale: string, options?: Intl.DateTimeFormatOptions): string => {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString(locale, options);
-};
 
 export default function TasksScreen() {
   const router = useRouter();
@@ -67,15 +65,11 @@ export default function TasksScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <ThemedText type="title">Tarefas</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">
-            {mockTasks.length} tarefas cadastradas
-          </ThemedText>
-        </View>
+      <ScreenContainer>
+        <ScreenHeader
+          title="Tarefas"
+          subtitle={`${mockTasks.length} tarefas cadastradas`}
+        />
 
         <View style={styles.tasksList}>
           {mockTasks.map(task => (
@@ -91,15 +85,13 @@ export default function TasksScreen() {
                       {getSubjectName(task.subjectId)}
                     </ThemedText>
                   </View>
-                  <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(task.status) }]} />
+                  <StatusIndicator color={getStatusColor(task.status)} />
                 </View>
                 <View style={styles.taskDetails}>
                   <View style={styles.detailRow}>
-                    <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(task.priority) }]}>
-                      <ThemedText type="small" style={styles.badgeText}>
-                        {getPriorityLabel(task.priority)}
-                      </ThemedText>
-                    </View>
+                    <Badge color={getPriorityColor(task.priority)}>
+                      {getPriorityLabel(task.priority)}
+                    </Badge>
                     <ThemedText type="small" themeColor="textSecondary">
                       {getStatusLabel(task.status)}
                     </ThemedText>
@@ -112,7 +104,7 @@ export default function TasksScreen() {
             </TouchableOpacity>
           ))}
         </View>
-      </ScrollView>
+      </ScreenContainer>
     </ThemedView>
   );
 }
@@ -120,20 +112,6 @@ export default function TasksScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.five }),
-    paddingHorizontal: Platform.select({ web: Spacing.six, default: Spacing.four }),
-    paddingBottom: BottomTabInset + Spacing.four,
-    maxWidth: MaxContentWidth,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  header: {
-    paddingBottom: Spacing.four,
   },
   tasksList: {
     gap: Spacing.three,
@@ -151,11 +129,6 @@ const styles = StyleSheet.create({
   taskTitleContainer: {
     flex: 1,
   },
-  statusIndicator: {
-    width: 4,
-    height: 40,
-    borderRadius: 2,
-  },
   taskDetails: {
     gap: Spacing.one,
   },
@@ -163,13 +136,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
-  },
-  priorityBadge: {
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-    borderRadius: Spacing.two,
-  },
-  badgeText: {
-    color: '#FFFFFF',
   },
 });

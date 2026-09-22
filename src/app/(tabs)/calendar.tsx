@@ -1,17 +1,14 @@
-import { StyleSheet, View, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Platform, TouchableOpacity } from 'react-native';
 import { useState, useMemo, useEffect } from 'react';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import ScreenContainer from '@/components/screen-container';
+import ScreenHeader from '@/components/screen-header';
+import Badge from '@/components/badge';
+import { formatDateWithoutTimezone } from '@/utils/date';
+import { Spacing } from '@/constants/theme';
 import { mockCalendarEvents, mockSubjects, mockTasks } from '@/data/mockData';
 import { TaskStatus, TaskPriority } from '@/types';
-
-// Utility function to format date without timezone issues
-const formatDateWithoutTimezone = (dateStr: string, locale: string, options?: Intl.DateTimeFormatOptions): string => {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString(locale, options);
-};
 
 // Combined calendar item type
 interface CalendarItem {
@@ -232,15 +229,11 @@ export default function CalendarScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <ThemedText type="title">Calendário</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary">
-            {mockCalendarEvents.length} eventos agendados
-          </ThemedText>
-        </View>
+      <ScreenContainer>
+        <ScreenHeader
+          title="Calendário"
+          subtitle={`${mockCalendarEvents.length} eventos agendados`}
+        />
 
         {renderCalendar()}
 
@@ -274,11 +267,9 @@ export default function CalendarScreen() {
                       </ThemedText>
                     )}
                     <View style={styles.eventMeta}>
-                      <View style={[styles.eventTypeBadge, { backgroundColor: getEventTypeColor(item.type) }]}>
-                        <ThemedText type="small" style={styles.badgeText}>
-                          {getEventTypeLabel(item.type)}
-                        </ThemedText>
-                      </View>
+                      <Badge color={getEventTypeColor(item.type)}>
+                        {getEventTypeLabel(item.type)}
+                      </Badge>
                       {item.type === 'task' && item.taskStatus && (
                         <ThemedText type="small" themeColor="textSecondary">
                           {getTaskStatusLabel(item.taskStatus)}
@@ -300,7 +291,7 @@ export default function CalendarScreen() {
             </ThemedText>
           )}
         </View>
-      </ScrollView>
+      </ScreenContainer>
     </ThemedView>
   );
 }
@@ -308,20 +299,6 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.five }),
-    paddingHorizontal: Platform.select({ web: Spacing.six, default: Spacing.four }),
-    paddingBottom: BottomTabInset + Spacing.four,
-    maxWidth: MaxContentWidth,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  header: {
-    paddingBottom: Spacing.four,
   },
   calendarCard: {
     padding: Platform.select({ web: Spacing.three, default: Spacing.two }),
@@ -411,13 +388,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.two,
     flexWrap: 'wrap',
-  },
-  eventTypeBadge: {
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-    borderRadius: Spacing.two,
-  },
-  badgeText: {
-    color: '#FFFFFF',
   },
 });

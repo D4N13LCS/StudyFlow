@@ -1,16 +1,12 @@
-import { StyleSheet, View, Platform, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-
+import { StyleSheet, View, Platform } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import ScreenContainer from '@/components/screen-container';
+import { formatDateWithoutTimezone } from '@/utils/date';
+import { Spacing } from '@/constants/theme';
 import { mockTasks, mockSubjects, mockCalendarEvents, mockUserProfile } from '@/data/mockData';
-import { TaskStatus } from '@/types';
 
 export default function DashboardScreen() {
-  const router = useRouter();
-
   const pendingTasks = mockTasks.filter(t => t.status === 'pending').length;
   const inProgressTasks = mockTasks.filter(t => t.status === 'in_progress').length;
   const completedTasks = mockTasks.filter(t => t.status === 'completed').length;
@@ -27,9 +23,7 @@ export default function DashboardScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}>
+      <ScreenContainer>
         <View style={styles.header}>
           <ThemedText type="title">Olá, {mockUserProfile.name.split(' ')[0]}!</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
@@ -59,7 +53,7 @@ export default function DashboardScreen() {
               <ThemedView key={task.id} type="backgroundElement" style={styles.taskItem}>
                 <ThemedText type="default">{task.title}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
-                  {new Date(task.dueDate).toLocaleDateString('pt-BR')}
+                  {formatDateWithoutTimezone(task.dueDate, 'pt-BR')}
                 </ThemedText>
               </ThemedView>
             ))}
@@ -74,7 +68,7 @@ export default function DashboardScreen() {
                 <ThemedView key={event.id} type="backgroundElement" style={styles.eventItem}>
                   <ThemedText type="default">{event.title}</ThemedText>
                   <ThemedText type="small" themeColor="textSecondary">
-                    {new Date(event.date).toLocaleDateString('pt-BR')}
+                    {formatDateWithoutTimezone(event.date, 'pt-BR')}
                   </ThemedText>
                 </ThemedView>
               ))
@@ -92,7 +86,7 @@ export default function DashboardScreen() {
             {mockSubjects.length} disciplinas matriculadas
           </ThemedText>
         </View>
-      </ScrollView>
+      </ScreenContainer>
     </ThemedView>
   );
 }
@@ -100,17 +94,6 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingTop: Platform.select({ web: Spacing.six, default: Spacing.five }),
-    paddingHorizontal: Platform.select({ web: Spacing.six, default: Spacing.four }),
-    paddingBottom: BottomTabInset + Spacing.four,
-    maxWidth: MaxContentWidth,
-    width: '100%',
-    alignSelf: 'center',
   },
   header: {
     paddingBottom: Spacing.four,
