@@ -1,6 +1,7 @@
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { ReactNode } from 'react';
 
 interface BadgeProps {
@@ -9,9 +10,12 @@ interface BadgeProps {
   style?: ViewStyle;
 }
 
-export default function Badge({ children, color = '#3B82F6', style }: BadgeProps) {
+export default function Badge({ children, color, style }: BadgeProps) {
+  const theme = useTheme();
+  const badgeColor = color || theme.primary;
+
   return (
-    <View style={[styles.badge, { backgroundColor: color }, style]}>
+    <View style={[styles.badge, { backgroundColor: badgeColor, borderRadius: Radius.sm }, style]}>
       <ThemedText type="small" style={styles.badgeText}>
         {children}
       </ThemedText>
@@ -23,7 +27,6 @@ const styles = StyleSheet.create({
   badge: {
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,
-    borderRadius: Spacing.two,
     alignSelf: 'flex-start',
   },
   badgeText: {
