@@ -1,13 +1,29 @@
-import { StyleSheet, View, Platform, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Pressable, useWindowDimensions } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import ScreenContainer from '@/components/screen-container';
 import StatusIndicator from '@/components/status-indicator';
-import { Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { mockUserProfile, mockSubjects, mockTasks, mockCalendarEvents } from '@/data/mockData';
 
+const COMPACT_BREAKPOINT = 768;
+const NARROW_BREAKPOINT = 420;
+const WIDE_BREAKPOINT = 1100;
+
 export default function ProfileScreen() {
-  // Calculate statistics dynamically
+  const theme = useTheme();
+  const { width } = useWindowDimensions();
+  const isCompact = width < COMPACT_BREAKPOINT;
+  const isNarrow = width < NARROW_BREAKPOINT;
+  const isWide = width >= WIDE_BREAKPOINT;
+  const summaryVariant = isNarrow ? 'full' : isWide ? 'quarter' : 'half';
+  const subjectLayout = isCompact
+    ? styles.subjectCardCompact
+    : isWide
+      ? styles.subjectCardWide
+      : styles.subjectCardHalf;
+
   const totalSubjects = mockSubjects.length;
   const pendingTasks = mockTasks.filter(t => t.status === 'pending').length;
   const completedTasks = mockTasks.filter(t => t.status === 'completed').length;
@@ -16,122 +32,147 @@ export default function ProfileScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScreenContainer>
-        {/* Header */}
         <View style={styles.header}>
-          <ThemedText type="title">Perfil</ThemedText>
-          <ThemedText type="small" themeColor="textSecondary" style={styles.headerDescription}>
-            Gerencie suas informações e acompanhe sua jornada acadêmica.
+          <ThemedText style={styles.pageTitle}>Perfil</ThemedText>
+          <ThemedText type="bodySecondary" themeColor="textSecondary">
+            Informações do estudante e resumo acadêmico.
           </ThemedText>
         </View>
 
-        {/* Main Profile Card */}
-        <ThemedView type="backgroundElement" style={styles.mainProfileCard}>
-          <View style={styles.profileHeader}>
-            <View style={styles.avatarContainer}>
-              <View style={styles.avatarPlaceholder}>
-                <ThemedText type="title" style={styles.avatarInitial}>
-                  {mockUserProfile.name.charAt(0)}
-                </ThemedText>
-              </View>
+        <ThemedView type="surface" style={styles.mainProfileCard}>
+          <View style={styles.profileTop}>
+            <View style={[styles.avatar, { backgroundColor: theme.primary }]}>
+              <ThemedText style={styles.avatarInitial}>
+                {mockUserProfile.name.charAt(0)}
+              </ThemedText>
             </View>
             <View style={styles.profileInfo}>
-              <ThemedText type="subtitle">{mockUserProfile.name}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
+              <ThemedText type="sectionTitle">{mockUserProfile.name}</ThemedText>
+              <ThemedText type="bodySecondary" themeColor="textSecondary">
                 {mockUserProfile.email}
               </ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
-                {mockUserProfile.course}
+              <ThemedText type="caption" themeColor="textSecondary">
+                {mockUserProfile.course} • {mockUserProfile.semester}º semestre
               </ThemedText>
             </View>
           </View>
-          <TouchableOpacity style={styles.editButton} activeOpacity={0.7}>
-            <ThemedText type="small" style={styles.editButtonText}>
-              ✎ Editar Perfil
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Editar perfil"
+            style={({ pressed }) => [
+              styles.editButton,
+              { borderColor: theme.primary, opacity: pressed ? 0.7 : 1 },
+              isCompact ? styles.editButtonCompact : styles.editButtonWide,
+            ]}>
+            <ThemedText type="label" style={{ color: theme.primary }}>
+              Editar perfil
             </ThemedText>
-          </TouchableOpacity>
+          </Pressable>
         </ThemedView>
 
-        {/* Quick Summary */}
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>Resumo Rápido</ThemedText>
+          <ThemedText type="sectionTitle" style={styles.sectionTitle}>
+            Resumo rápido
+          </ThemedText>
           <View style={styles.summaryGrid}>
-            <ThemedView type="backgroundElement" style={styles.summaryCard}>
-              <ThemedText type="small" themeColor="textSecondary">Nome</ThemedText>
-              <ThemedText type="default">{mockUserProfile.name}</ThemedText>
-            </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.summaryCard}>
-              <ThemedText type="small" themeColor="textSecondary">E-mail</ThemedText>
-              <ThemedText type="default" style={styles.summaryValue}>{mockUserProfile.email}</ThemedText>
-            </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.summaryCard}>
-              <ThemedText type="small" themeColor="textSecondary">Curso</ThemedText>
-              <ThemedText type="default">{mockUserProfile.course}</ThemedText>
-            </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.summaryCard}>
-              <ThemedText type="small" themeColor="textSecondary">Semestre Atual</ThemedText>
-              <ThemedText type="default">{mockUserProfile.semester}º semestre</ThemedText>
-            </ThemedView>
+            <SummaryItem label="Nome" value={mockUserProfile.name} variant={summaryVariant} />
+            <SummaryItem label="E-mail" value={mockUserProfile.email} variant={summaryVariant} />
+            <SummaryItem label="Curso" value={mockUserProfile.course} variant={summaryVariant} />
+            <SummaryItem
+              label="Semestre"
+              value={`${mockUserProfile.semester}º semestre`}
+              variant={summaryVariant}
+            />
           </View>
         </View>
 
-        {/* Academic Info & Statistics */}
-        <View style={styles.academicSection}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>Informações Acadêmicas</ThemedText>
-          <ThemedView type="backgroundElement" style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <ThemedText type="small" themeColor="textSecondary">Curso</ThemedText>
-              <ThemedText type="default">{mockUserProfile.course}</ThemedText>
-            </View>
-            <View style={styles.infoRow}>
-              <ThemedText type="small" themeColor="textSecondary">Semestre</ThemedText>
-              <ThemedText type="default">{mockUserProfile.semester}º semestre</ThemedText>
-            </View>
-          </ThemedView>
+        <View style={[styles.splitRow, isCompact && styles.splitRowCompact]}>
+          <View style={[styles.splitColumn, isCompact ? styles.splitColumnCompact : styles.academicColumn]}>
+            <ThemedText type="sectionTitle" style={styles.sectionTitle}>
+              Informações Acadêmicas
+            </ThemedText>
+            <ThemedView type="surface" style={styles.infoCard}>
+              <View style={styles.infoRow}>
+                <ThemedText type="caption" themeColor="textSecondary">
+                  Curso
+                </ThemedText>
+                <ThemedText type="default" style={styles.infoValue}>
+                  {mockUserProfile.course}
+                </ThemedText>
+              </View>
+              <View style={[styles.infoDivider, { backgroundColor: theme.backgroundSelected }]} />
+              <View style={styles.infoRow}>
+                <ThemedText type="caption" themeColor="textSecondary">
+                  Semestre
+                </ThemedText>
+                <ThemedText type="default" style={styles.infoValue}>
+                  {mockUserProfile.semester}º semestre
+                </ThemedText>
+              </View>
+            </ThemedView>
+          </View>
 
-          <ThemedText type="subtitle" style={styles.sectionTitle}>Estatísticas</ThemedText>
-          <View style={styles.statsGrid}>
-            <ThemedView type="backgroundElement" style={styles.statCard}>
-              <ThemedText type="title" style={styles.statValue}>{totalSubjects}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">Disciplinas</ThemedText>
-            </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.statCard}>
-              <ThemedText type="title" style={styles.statValue}>{pendingTasks}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">Tarefas pendentes</ThemedText>
-            </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.statCard}>
-              <ThemedText type="title" style={styles.statValue}>{completedTasks}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">Tarefas concluídas</ThemedText>
-            </ThemedView>
-            <ThemedView type="backgroundElement" style={styles.statCard}>
-              <ThemedText type="title" style={styles.statValue}>{totalEvents}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">Eventos no calendário</ThemedText>
-            </ThemedView>
+          <View style={[styles.splitColumn, isCompact ? styles.splitColumnCompact : styles.statsColumn]}>
+            <ThemedText type="sectionTitle" style={styles.sectionTitle}>
+              Estatísticas
+            </ThemedText>
+            <View style={styles.statsGrid}>
+              <StatCard value={totalSubjects} label="Disciplinas" />
+              <StatCard value={pendingTasks} label="Tarefas pendentes" />
+              <StatCard value={completedTasks} label="Tarefas concluídas" />
+              <StatCard value={totalEvents} label="Eventos no calendário" />
+            </View>
           </View>
         </View>
 
-        {/* Subjects of the Semester */}
         <View style={styles.section}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>Disciplinas do Semestre</ThemedText>
-          <View style={styles.subjectsList}>
+          <ThemedText type="sectionTitle" style={styles.sectionTitle}>
+            Disciplinas do Semestre
+          </ThemedText>
+          <View style={styles.subjectsGrid}>
             {mockSubjects.map(subject => (
-              <ThemedView key={subject.id} type="backgroundElement" style={styles.subjectCard}>
+              <ThemedView
+                key={subject.id}
+                type="surface"
+                style={[styles.subjectCard, subjectLayout]}>
                 <View style={styles.subjectHeader}>
                   <StatusIndicator color={subject.color} />
                   <View style={styles.subjectInfo}>
-                    <ThemedText type="default">{subject.name}</ThemedText>
-                    <ThemedText type="small" themeColor="textSecondary">{subject.code}</ThemedText>
+                    <ThemedText type="cardTitle">{subject.name}</ThemedText>
+                    <ThemedText type="caption" themeColor="textSecondary">
+                      {subject.code}
+                    </ThemedText>
                   </View>
                 </View>
                 <View style={styles.subjectDetails}>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    Professor: {subject.teacher}
-                  </ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    Horário: {subject.schedule}
-                  </ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    Créditos: {subject.credits}
-                  </ThemedText>
+                  <View style={styles.detailRow}>
+                    <ThemedText type="caption" themeColor="textSecondary">
+                      Professor
+                    </ThemedText>
+                    <ThemedText type="caption" style={styles.detailValue}>
+                      {subject.teacher}
+                    </ThemedText>
+                  </View>
+                  <View style={[styles.detailRow, !isCompact && styles.scheduleRowWide]}>
+                    <ThemedText type="caption" themeColor="textSecondary">
+                      Horário
+                    </ThemedText>
+                    <ThemedText
+                      type="caption"
+                      style={[styles.detailValue, !isCompact && styles.scheduleValueWide]}
+                      numberOfLines={1}
+                    >
+                      {subject.schedule}
+                    </ThemedText>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <ThemedText type="caption" themeColor="textSecondary">
+                      Créditos
+                    </ThemedText>
+                    <ThemedText type="caption" style={styles.detailValue}>
+                      {subject.credits}
+                    </ThemedText>
+                  </View>
                 </View>
               </ThemedView>
             ))}
@@ -142,59 +183,107 @@ export default function ProfileScreen() {
   );
 }
 
+function SummaryItem({
+  label,
+  value,
+  variant,
+}: {
+  label: string;
+  value: string;
+  variant: 'full' | 'half' | 'quarter';
+}) {
+  const layout =
+    variant === 'full'
+      ? styles.tileFull
+      : variant === 'half'
+        ? styles.tileHalf
+        : styles.tileQuarter;
+
+  return (
+    <ThemedView type="surface" style={[styles.summaryCard, layout]}>
+      <ThemedText type="caption" themeColor="textSecondary">
+        {label}
+      </ThemedText>
+      <ThemedText type="cardTitle" style={styles.summaryValue}>
+        {value}
+      </ThemedText>
+    </ThemedView>
+  );
+}
+
+function StatCard({ value, label }: { value: number; label: string }) {
+  const theme = useTheme();
+
+  return (
+    <ThemedView type="surface" style={styles.statCard}>
+      <ThemedText style={[styles.statValue, { color: theme.primary }]}>{value}</ThemedText>
+      <ThemedText type="caption" themeColor="textSecondary" style={styles.statLabel}>
+        {label}
+      </ThemedText>
+    </ThemedView>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   header: {
-    paddingBottom: Spacing.four,
+    paddingBottom: Spacing.five,
+    width: '100%',
   },
-  headerDescription: {
-    marginTop: Spacing.one,
+  pageTitle: {
+    ...Typography.pageTitle,
+    marginBottom: Spacing.one,
   },
   mainProfileCard: {
-    padding: Platform.select({ web: Spacing.five, default: Spacing.four }),
-    borderRadius: Spacing.three,
-    marginBottom: Spacing.four,
+    width: '100%',
+    padding: Spacing.four,
+    borderRadius: Radius.lg,
+    marginBottom: Spacing.five,
+    gap: Spacing.four,
   },
-  profileHeader: {
+  profileTop: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.four,
-    marginBottom: Spacing.four,
+    width: '100%',
   },
-  avatarContainer: {
-    flexShrink: 0,
-  },
-  avatarPlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#3B82F6',
+  avatar: {
+    width: Spacing.six,
+    height: Spacing.six,
+    borderRadius: Radius.full,
     justifyContent: 'center',
     alignItems: 'center',
+    flexShrink: 0,
   },
   avatarInitial: {
-    color: '#FFFFFF',
-    fontSize: 32,
+    ...Typography.sectionTitle,
+    color: Colors.dark.text,
   },
   profileInfo: {
     flex: 1,
+    minWidth: 0,
     gap: Spacing.one,
   },
   editButton: {
-    alignSelf: 'flex-end',
-    paddingHorizontal: Spacing.three,
+    paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
+    borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: '#3B82F6',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  editButtonText: {
-    color: '#3B82F6',
+  editButtonWide: {
+    alignSelf: 'flex-end',
+  },
+  editButtonCompact: {
+    alignSelf: 'stretch',
+    width: '100%',
   },
   section: {
     marginBottom: Spacing.five,
+    width: '100%',
   },
   sectionTitle: {
     marginBottom: Spacing.three,
@@ -203,65 +292,151 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.three,
+    width: '100%',
   },
   summaryCard: {
-    flex: 1,
-    minWidth: 140,
-    padding: Platform.select({ web: Spacing.four, default: Spacing.three }),
-    borderRadius: Spacing.three,
+    padding: Spacing.three,
+    borderRadius: Radius.lg,
     gap: Spacing.one,
   },
   summaryValue: {
-    fontSize: 12,
+    flexShrink: 1,
   },
-  academicSection: {
-    flexDirection: 'column',
+  tileFull: {
+    flexGrow: 1,
+    flexBasis: '100%',
+    width: '100%',
+  },
+  tileHalf: {
+    flexGrow: 1,
+    flexBasis: '40%',
+    maxWidth: '100%',
+  },
+  tileQuarter: {
+    flexGrow: 1,
+    flexBasis: '20%',
+    maxWidth: '100%',
+  },
+  splitRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
     gap: Spacing.four,
     marginBottom: Spacing.five,
+    width: '100%',
+  },
+  splitRowCompact: {
+    flexDirection: 'column',
+  },
+  splitColumn: {
+    minWidth: 0,
+  },
+  splitColumnCompact: {
+    width: '100%',
+  },
+  academicColumn: {
+    flex: 1,
+    alignSelf: 'stretch',
+  },
+  statsColumn: {
+    flex: 1.4,
   },
   infoCard: {
-    padding: Platform.select({ web: Spacing.four, default: Spacing.three }),
-    borderRadius: Spacing.three,
+    width: '100%',
+    flex: 1,
+    padding: Spacing.four,
+    borderRadius: Radius.lg,
     gap: Spacing.three,
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: Spacing.three,
+  },
+  infoValue: {
+    flex: 1,
+    textAlign: 'right',
+  },
+  infoDivider: {
+    height: 1,
+    opacity: 0.6,
   },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.three,
+    width: '100%',
   },
   statCard: {
-    flex: 1,
-    minWidth: 140,
-    padding: Platform.select({ web: Spacing.four, default: Spacing.three }),
-    borderRadius: Spacing.three,
+    flexGrow: 1,
+    flexBasis: '40%',
+    maxWidth: '100%',
+    padding: Spacing.three,
+    borderRadius: Radius.lg,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.one,
   },
   statValue: {
-    color: '#3B82F6',
-    marginBottom: Spacing.one,
+    ...Typography.pageTitle,
   },
-  subjectsList: {
+  statLabel: {
+    textAlign: 'center',
+  },
+  subjectsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.three,
+    width: '100%',
   },
   subjectCard: {
-    padding: Platform.select({ web: Spacing.four, default: Spacing.three }),
-    borderRadius: Spacing.three,
+    flexGrow: 1,
+    flexBasis: '22%',
+    maxWidth: '100%',
+    padding: Spacing.four,
+    borderRadius: Radius.lg,
+    gap: Spacing.three,
+  },
+  subjectCardCompact: {
+    flexBasis: '100%',
+    width: '100%',
+  },
+  subjectCardHalf: {
+    flexBasis: '40%',
+  },
+  subjectCardWide: {
+    flexBasis: '22%',
   },
   subjectHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.two,
     gap: Spacing.three,
   },
   subjectInfo: {
     flex: 1,
+    minWidth: 0,
   },
   subjectDetails: {
+    gap: Spacing.two,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: Spacing.two,
+  },
+  detailValue: {
+    flex: 1,
+    textAlign: 'right',
+  },
+  scheduleRowWide: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     gap: Spacing.one,
+  },
+
+  scheduleValueWide: {
+    width: '100%',
+    textAlign: 'left',
   },
 });
