@@ -3,11 +3,9 @@ import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import ScreenContainer from '@/components/screen-container';
-import ScreenHeader from '@/components/screen-header';
-import StatusIndicator from '@/components/status-indicator';
 import Badge from '@/components/badge';
+import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { formatDateWithoutTimezone } from '@/utils/date';
-import { Spacing } from '@/constants/theme';
 import { mockTasks, mockSubjects } from '@/data/mockData';
 import { TaskStatus, TaskPriority } from '@/types';
 
@@ -22,22 +20,22 @@ export default function TasksScreen() {
   const getStatusColor = (status: TaskStatus) => {
     switch (status) {
       case 'pending':
-        return '#F59E0B';
+        return Colors.light.warning;
       case 'in_progress':
-        return '#3B82F6';
+        return Colors.light.primary;
       case 'completed':
-        return '#10B981';
+        return Colors.light.success;
     }
   };
 
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
       case 'high':
-        return '#EF4444';
+        return Colors.light.error;
       case 'medium':
-        return '#F59E0B';
+        return Colors.light.warning;
       case 'low':
-        return '#10B981';
+        return Colors.light.success;
     }
   };
 
@@ -66,39 +64,42 @@ export default function TasksScreen() {
   return (
     <ThemedView style={styles.container}>
       <ScreenContainer>
-        <ScreenHeader
-          title="Tarefas"
-          subtitle={`${mockTasks.length} tarefas cadastradas`}
-        />
+        {/* Header */}
+        <View style={styles.header}>
+          <ThemedText style={styles.title}>Tarefas</ThemedText>
+          <ThemedText type="bodySecondary" themeColor="textSecondary">
+            {mockTasks.length} tarefas cadastradas
+          </ThemedText>
+        </View>
 
+        {/* Tasks List */}
         <View style={styles.tasksList}>
           {mockTasks.map(task => (
             <TouchableOpacity
               key={task.id}
               onPress={() => router.push(`/task/${task.id}` as any)}
               activeOpacity={0.7}>
-              <ThemedView type="backgroundElement" style={styles.taskCard}>
+              <ThemedView type="surface" style={styles.taskCard}>
                 <View style={styles.taskHeader}>
                   <View style={styles.taskTitleContainer}>
-                    <ThemedText type="default">{task.title}</ThemedText>
-                    <ThemedText type="small" themeColor="textSecondary">
+                    <ThemedText type="cardTitle" style={styles.taskTitle}>{task.title}</ThemedText>
+                    <ThemedText type="caption" themeColor="textSecondary">
                       {getSubjectName(task.subjectId)}
                     </ThemedText>
                   </View>
-                  <StatusIndicator color={getStatusColor(task.status)} />
+                  <Badge color={getPriorityColor(task.priority)}>
+                    {getPriorityLabel(task.priority)}
+                  </Badge>
                 </View>
                 <View style={styles.taskDetails}>
                   <View style={styles.detailRow}>
-                    <Badge color={getPriorityColor(task.priority)}>
-                      {getPriorityLabel(task.priority)}
-                    </Badge>
-                    <ThemedText type="small" themeColor="textSecondary">
+                    <Badge color={getStatusColor(task.status)}>
                       {getStatusLabel(task.status)}
+                    </Badge>
+                    <ThemedText type="caption" themeColor="textSecondary" style={styles.dueDate}>
+                      Vencimento: {formatDateWithoutTimezone(task.dueDate, 'pt-BR')}
                     </ThemedText>
                   </View>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    Data: {formatDateWithoutTimezone(task.dueDate, 'pt-BR')}
-                  </ThemedText>
                 </View>
               </ThemedView>
             </TouchableOpacity>
@@ -113,28 +114,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  header: {
+    paddingTop: Platform.select({ web: 0, default: Spacing.two }),
+    paddingBottom: Spacing.five,
+  },
+  title: {
+    ...Typography.pageTitle,
+    marginBottom: Spacing.one,
+  },
   tasksList: {
     gap: Spacing.three,
   },
   taskCard: {
-    padding: Platform.select({ web: Spacing.four, default: Spacing.three }),
-    borderRadius: Spacing.three,
+    padding: Platform.select({ web: Spacing.five, default: Spacing.four }),
+    borderRadius: Radius.lg,
+    gap: Spacing.three,
   },
   taskHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.two,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     gap: Spacing.three,
   },
   taskTitleContainer: {
     flex: 1,
   },
+  taskTitle: {
+    marginBottom: Spacing.half,
+  },
   taskDetails: {
-    gap: Spacing.one,
+    gap: Spacing.two,
   },
   detailRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
     gap: Spacing.two,
+  },
+  dueDate: {
+    flex: 1,
+    minWidth: 0,
   },
 });
