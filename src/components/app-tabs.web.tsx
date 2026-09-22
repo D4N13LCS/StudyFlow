@@ -13,7 +13,7 @@ import { ExternalLink } from './external-link';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Colors, MaxContentWidth, Radius, Spacing, Typography } from '@/constants/theme';
 
 export default function AppTabs() {
   return (
@@ -43,15 +43,26 @@ export default function AppTabs() {
 }
 
 export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
+  const scheme = useColorScheme();
+  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+
   return (
-    <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
-      <ThemedView
-        type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
-        style={styles.tabButtonView}>
-        <ThemedText type="small" themeColor={isFocused ? 'text' : 'textSecondary'}>
-          {children}
-        </ThemedText>
-      </ThemedView>
+    <Pressable
+      {...props}
+      style={({ pressed, hovered }) => [
+        styles.tabButton,
+        pressed && styles.pressed,
+        hovered && !isFocused && styles.hovered,
+        isFocused && styles.focused,
+      ]}>
+      <ThemedText
+        type="label"
+        style={[
+          styles.tabButtonText,
+          isFocused && { color: colors.primary },
+        ]}>
+        {children}
+      </ThemedText>
     </Pressable>
   );
 }
@@ -62,8 +73,8 @@ export function CustomTabList(props: TabListProps) {
 
   return (
     <View {...props} style={styles.tabListContainer}>
-      <ThemedView type="backgroundElement" style={styles.innerContainer}>
-        <ThemedText type="smallBold" style={styles.brandText}>
+      <ThemedView type="surface" style={styles.innerContainer}>
+        <ThemedText type="label" style={styles.brandText}>
           StudyFlow
         </ThemedText>
 
@@ -73,7 +84,7 @@ export function CustomTabList(props: TabListProps) {
           <Pressable style={styles.externalPressable}>
             <ThemedText type="link">Docs</ThemedText>
             <SymbolView
-              tintColor={colors.text}
+              tintColor={colors.textSecondary}
               name={{ ios: 'arrow.up.right.square', web: 'link' }}
               size={12}
             />
@@ -96,7 +107,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.five,
-    borderRadius: Spacing.five,
+    borderRadius: Radius.xl,
     flexDirection: 'row',
     alignItems: 'center',
     flexGrow: 1,
@@ -105,14 +116,24 @@ const styles = StyleSheet.create({
   },
   brandText: {
     marginRight: 'auto',
+    color: '#4F46E5',
+  },
+  tabButton: {
+    paddingVertical: Spacing.one,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.md,
+  },
+  tabButtonText: {
+    color: Colors.light.textSecondary,
   },
   pressed: {
     opacity: 0.7,
   },
-  tabButtonView: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.three,
+  hovered: {
+    backgroundColor: Colors.light.backgroundSelected,
+  },
+  focused: {
+    backgroundColor: Colors.light.backgroundSelected,
   },
   externalPressable: {
     flexDirection: 'row',
